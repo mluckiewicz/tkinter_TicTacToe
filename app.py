@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import DISABLED, NORMAL, messagebox
-
+import random
 
 class App(tk.Tk):
     
-    FIELD_FONT = "Arial, 48"
+    FIELD_FONT = "Arial, 40"
     
     def __init__(self):
         super().__init__()
@@ -25,15 +25,15 @@ class App(tk.Tk):
         }
         self.fields = []
         self.fields_frame = self.create_fields_frame() # ramka pól gry
-        
+    
+        # ustawienie szerokości kolumn i wysokości wierszy
         self.fields_frame.rowconfigure(0, weight=1)
-        # # ustawienie szerokości kollumn i wysokości wierszy
         for i in range(3):
              self.fields_frame.rowconfigure(i, weight=1)
              self.fields_frame.columnconfigure(i, weight=1)
             
-        self.create_options()
-        self.create_fields() #utworzenie pól gry
+        self.create_options() # utworzenie menu gry
+        self.create_fields() # utworzenie pól gry
         
     def create_options_frame(self):
         options_frame = tk.Frame(self)
@@ -48,8 +48,7 @@ class App(tk.Tk):
     def create_options(self):
         options = tk.Menu(self, tearoff=False)
         options.add_command(label="Zresetuj grę", command=self.reset)
-        self.config(menu=options)
-        
+        self.config(menu=options)    
         
     def create_fields(self):
         for field_name, possition in self.fields_possition.items():
@@ -57,7 +56,11 @@ class App(tk.Tk):
                     self.fields_frame,
                     name=field_name,
                     text=" ",
-                    font=self.FIELD_FONT)
+                    font=self.FIELD_FONT,
+                    bd=0,
+                    bg='#54FA9B', 
+                    height = 1, 
+                    width = 1)
             field.grid(
                     row=possition[0], 
                     column=possition[1],
@@ -68,13 +71,15 @@ class App(tk.Tk):
 
     def update_field(self, btn):
         if btn["text"] == " " and self.turn:
+            # ruch wykonuje pierwszy gracz
             btn["text"] = "X"
             self.turn = False
             self.turn_count += 1
             coord = self.fields_possition[btn.__dict__["_name"]]
             self.game_state[coord[0]][coord[1]] = "X"
         elif btn["text"] == " " and not self.turn:
-            btn["text"] = "O"
+            # ruch wykonuje drugi gracz
+            btn["text"] = "O" 
             self.turn = True
             self.turn_count += 1
             coord = self.fields_possition[btn.__dict__["_name"]]
@@ -91,12 +96,12 @@ class App(tk.Tk):
                 self.diagonal_win(self.game_state, sing):
                 self.winner = True
                 self.disable_all_fields()
-                messagebox.showinfo("Kółko i Krzyżyk", f"Wygrał {sing}")
+                messagebox.showinfo("Kółko i Krzyżyk", f"Wygrał {sing}.")
         else:
             # Tie
             if self.turn_count == 9 and self.winner == False:
                 self.disable_all_fields()
-                messagebox.showinfo("Kółko i Krzyżyk", "Remis!.")
+                messagebox.showinfo("Kółko i Krzyżyk", "Remis!")
 
     def row_win(self, board, player):
         for row in board:
